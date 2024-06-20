@@ -180,3 +180,45 @@ resource "aws_network_acl_association" "lms-private-nacl-association" {
   network_acl_id = aws_network_acl.lms-private-nacl.id
   subnet_id      = aws_subnet.lms_private_sn.id
 }
+
+# instance creation
+
+resource "aws_instance" "lms-ec2" {
+  ami           = "ami-0e001c9271cf7f3b9"
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.lms_public_sn.id
+  key_name      = "Linux"	
+  vpc_security_group_ids = [aws_security_group.lms_sg.id]
+
+  tags = {
+    Name = "lms-ec2"
+  }
+}
+
+# security group
+
+resource "aws_security_group" "lms_sg" {
+  name        = "allow all"
+  description = "Allow all traffic"
+  vpc_id      = aws_vpc.lms_vpc.id
+
+  tags = {
+    Name = "lms-sg"
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_all" {
+  security_group_id = aws_security_group.lms_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 0
+  ip_protocol       = "tcp"
+  to_port           = 65535
+}
+

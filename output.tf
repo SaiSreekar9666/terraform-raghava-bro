@@ -67,4 +67,3 @@ output "private-NACL-id"{
   value = aws_network_acl.lms-private-nacl.id
   description = "getting private-nacl id"
 }
-

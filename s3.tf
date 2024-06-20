@@ -1,9 +1,8 @@
 resource "aws_s3_bucket" "my-bucket" {
-  bucket = "lms-devops-2414"
+  bucket = "crm-devops-241414"
 
   tags = {
     Name        = "My bucket"
 
   }
 }
-

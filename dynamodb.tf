@@ -8,4 +8,3 @@ resource "aws_dynamodb_table" "terraform_lock" {
     type = "S"    # string data type
   }
 }
-

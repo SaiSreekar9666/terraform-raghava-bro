@@ -3,7 +3,7 @@ resource "aws_vpc" "lms_vpc" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  vpc_id            = aws_vpc.lms_vpc.id
+  vpc_id            = var.vpc_id
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
   map_public_ip_on_launch = true
@@ -14,7 +14,7 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_subnet" "private_subnet" {
-  vpc_id            = aws_vpc.lms_vpc.id
+  vpc_id            = var.vpc_id
   cidr_block        = "10.0.2.0/24"
   availability_zone = "us-east-1b"
   
@@ -24,11 +24,11 @@ resource "aws_subnet" "private_subnet" {
 }
 
 resource "aws_internet_gateway" "lms_igw" {
-  vpc_id = aws_vpc.lms_vpc.id
+  vpc_id = var.vpc_id
 }
 
 resource "aws_route_table" "public_subnet_rt" {
-  vpc_id = aws_vpc.lms_vpc.id
+  vpc_id = var.vpc_id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -37,7 +37,7 @@ resource "aws_route_table" "public_subnet_rt" {
 }
 
 resource "aws_route_table" "private_subnet_rt" {
-  vpc_id = aws_vpc.lms_vpc.id
+  vpc_id = var.vpc_id
 
   route {
     cidr_block = "0.0.0.0/0"

@@ -1,5 +1,5 @@
 resource "aws_eks_cluster" "eks_cluster" {
-  name     = "lms-eks-cluster"
+  name     = var.aws_eks_cluster
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "eks_vpc_resource_controller" {
 }
 
 resource "aws_iam_role" "eks_cluster_role" {
-  name = "eks-cluster_role"
+  name = "eks_cluster_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -39,7 +39,7 @@ resource "aws_iam_role" "eks_cluster_role" {
 }
 
 resource "aws_iam_role" "eks_worker_role" {
-  name = "eks-worker-role"
+  name = var.aws_iam_role
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -57,17 +57,17 @@ resource "aws_iam_role" "eks_worker_role" {
 
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
   role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  policy_arn = var.eks_worker_node_policy
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  policy_arn = var.eks_cni_policy
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = var.AmazonEC2ContainerRegistryReadOnly
 }
 
 resource "aws_eks_node_group" "eks_worker_nodes" {
@@ -77,9 +77,9 @@ resource "aws_eks_node_group" "eks_worker_nodes" {
   subnet_ids      = [aws_subnet.public_subnet.id, aws_subnet.private_subnet.id]
 
   scaling_config {
-    desired_size = 2
-    max_size     = 2
-    min_size     = 1
+    desired_size = var.desired_size
+    max_size     = var.max_size
+    min_size     = var.min_size
   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_worker_node_policy, aws_iam_role_policy_attachment.eks_cni_policy, aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly]
